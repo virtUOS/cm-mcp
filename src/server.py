@@ -844,6 +844,20 @@ async def run_query(query: str, reasoning: str = "") -> str:
     except ValueError as e:
         return f"❌ Validation error: {e}"
 
+@mcp.tool()
+async def get_current_date(timezone_name: str = "UTC") -> str:
+    """
+    Get the current date and time in a given timezone.
+
+    Args:
+        timezone_name: IANA timezone name (e.g. 'America/New_York', 'Europe/Paris'). Defaults to UTC.
+    """
+    from datetime import datetime
+    import zoneinfo
+
+    tz = zoneinfo.ZoneInfo(timezone_name)
+    now = datetime.now(tz)
+    return now.strftime(f"Current date: %Y-%m-%d | Time ({timezone_name}): %H:%M:%S | Weekday: %A")
 
 # ============ RESOURCES ============
 
