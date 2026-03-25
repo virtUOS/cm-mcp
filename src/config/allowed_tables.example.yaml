@@ -1,0 +1,17 @@
+tables:
+  - name: table1
+    description: "alle Abschlüsse"
+      
+  - name: table2
+    description: "alle Fächer"
+      
+  - name: table3
+    description: "Studiengänge, Kombination aus Abschlussfach, PO-Version und Angaben zu den Studiengängen"
+    
+  # ... more tables can be added here
+  # - name: degree
+  #   description: "alle Abschlüsse"
+  #   key_columns:
+  #     status: "active, inactive, suspended"
+
+
