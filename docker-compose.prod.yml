@@ -40,18 +40,19 @@ services:
       test: ["CMD-SHELL", "pg_isready"]
   
     
-#   pgadmin-his:
-#     # https://docs.docker.com/guides/pgadmin/  
-#     image: dpage/pgadmin4:latest
-#     ports:
-#       - 5051:80
-#     environment:
-#       # Required by pgAdmin
-#       PGADMIN_DEFAULT_EMAIL: "adminhistest@his.com"
-#       PGADMIN_DEFAULT_PASSWORD: "passwordhistest"
-#     networks:
-#       - net_his
-#     restart: always
+  caddy:
+      image: docker.io/library/caddy:2.11-alpine
+      container_name: caddy
+      restart: always
+      volumes:
+        - "./Caddyfile:/etc/caddy/Caddyfile"  # Caddy configuration
+        - caddy_data:/data  # Caddy data (e.g. certificates)
+        - caddy_config:/config
+      networks:
+        - net_mcp
+      ports:
+          - "80:80"     # HTTP
+          - "443:443"   # HTTPS
    
 volumes:
   postgres-data:
