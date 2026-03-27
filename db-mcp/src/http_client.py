@@ -20,7 +20,7 @@ async def main():
         prompts = await client.list_prompts()
 
         # Execute operations
-        result = await client.call_tool("describe_table", {"table_name": "degree"})
+        result = await client.call_tool("get_current_date", {"timezone_name": "UTC"})
         print(result)
 
 asyncio.run(main())

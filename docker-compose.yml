@@ -15,6 +15,21 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+  
+  redis:
+    container_name: mcp_redis
+    image: redis:latest
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379"
+    command: >
+      --maxmemory 1024mb
+      --maxmemory-policy allkeys-lru
+      --maxmemory-samples 5
+    networks:
+      - net_mcp
+    restart: always
   postgres:
     image: postgres:17-alpine
     container_name: his-postgres
@@ -54,6 +69,7 @@ services:
    
 volumes:
   postgres-data:
+  redis-data:
 
 networks:
   net_mcp:
