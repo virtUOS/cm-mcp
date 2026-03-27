@@ -23,7 +23,7 @@ import yaml
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
-from app_auth import auth
+#from app_auth import auth
 load_dotenv()
 
 
@@ -678,7 +678,7 @@ config = Config.load()
 db = Database(config)
 fmt = Formatter(config)
 
-mcp = FastMCP("PostgreSQL Explorer", auth=auth)
+mcp = FastMCP("PostgreSQL Explorer")
 
 
 # @mcp.on_event("startup")
