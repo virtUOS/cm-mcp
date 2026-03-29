@@ -3,7 +3,8 @@
 Uses FastMCP for clean tool definitions and separates data fetching
 from formatting for better maintainability.
 """
-
+import sys
+sys.path.append("/cm-mcp")
 import json
 import os
 import re
@@ -25,7 +26,8 @@ from fastmcp import FastMCP
 from pydantic import BaseModel, Field
 #from app_auth import auth
 load_dotenv()
-
+from log_conf.logger_setup import get_logger
+log =get_logger()
 
 # ============ CONFIGURATION ============
 """
@@ -701,7 +703,9 @@ async def list_tables() -> str:
     Use 'explore_table' if you discover related tables via foreign keys.
     """
     tables = await db.get_tables_info(config.get_curated_names())
-    return fmt.format_tables_list(tables)
+    result = fmt.format_tables_list(tables)
+    log.info(f"List of Tables: {result[:70]}")
+    return result
 
 
 @mcp.tool()
@@ -715,9 +719,14 @@ async def describe_table(table_name: str) -> str:
     Args:
         table_name: Name of the curated table to describe
     """
-    validated_name = db.validate_curated_table(table_name)
+    try:
+        validated_name = db.validate_curated_table(table_name)
+    except ValueError:
+        return "Table is not in the curated list. Use 'list_tables' to see available tables, or 'explore_table' for tables discovered via foreign keys."
     schema = await db.get_table_schema(validated_name)
-    return fmt.format_table_schema(schema)
+    result = fmt.format_table_schema(schema)
+    log.info(f"Table Description: {result[:70]}")
+    return result
 
 
 @mcp.tool()
@@ -729,9 +738,14 @@ async def sample_data(table_name: str, limit: int = 5) -> str:
         table_name: Name of the curated table
         limit: Number of rows (max 10)
     """
-    validated_name = db.validate_curated_table(table_name)
+    try: 
+        validated_name = db.validate_curated_table(table_name)
+    except ValueError:
+        return "Table is not in the curated list. Use 'list_tables' to see available tables, or 'explore_table' for tables discovered via foreign keys."
     data = await db.get_sample_data(validated_name, limit)
-    return fmt.format_sample_data(validated_name, data)
+    result = fmt.format_sample_data(validated_name, data)
+    log.info (f"Sample Data: {result[:70]}")
+    return result
 
 
 @mcp.tool()
@@ -744,9 +758,14 @@ async def column_values(table_name: str, column_name: str) -> str:
         table_name: Name of the curated table
         column_name: Name of the column
     """
-    validated_name = db.validate_curated_table(table_name)
+    try:
+        validated_name = db.validate_curated_table(table_name)
+    except ValueError:
+        return "Table is not in the curated list. Use 'list_tables' to see available tables, or 'explore_table' for tables discovered via foreign keys."
     values = await db.get_column_values(validated_name, column_name)
-    return fmt.format_column_values(values)
+    result = fmt.format_column_values(values)
+    log.info(f"Column Values: {result[:100]}")
+    return result
 
 
 @mcp.tool()
@@ -759,7 +778,9 @@ async def search_schema(search_term: str) -> str:
         search_term: Keyword to search for (e.g., 'customer', 'order')
     """
     results = await db.search_schema(search_term)
-    return fmt.format_search_results(results)
+    r = fmt.format_search_results(results)
+    log.info(f"Search Schema: {r[:100]}")
+    return r
 
 
 # ============ UNRESTRICTED EXPLORATION TOOLS ============

@@ -7,7 +7,7 @@ services:
       - .env
     environment:
       # PostgreSQL connection string
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5452/${POSTGRES_DB}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
     command: ["/bin/sh", "-c", "cd db-mcp/src && python server.py"]
     networks:
       - net_mcp

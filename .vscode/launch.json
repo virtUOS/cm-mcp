@@ -9,7 +9,7 @@
             "type": "debugpy",
             "request": "launch",
             "justMyCode":false,
-            "program": "/cm-mcp/src/client.py",
+            "program": "/cm-mcp/db-mcp/src/client.py",
             "env":{ "PYTHONPATH": "/his-mcp"},
         
         },

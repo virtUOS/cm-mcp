@@ -41,19 +41,20 @@ async def chat_completion(session: aiohttp.ClientSession, messages: list, tools:
 
 
 async def main():
-    server_params = StdioServerParameters(
-        command="python",
-        args=["/his-mcp/src/server.py"],
-        env={**os.environ},
-    )
+    # server_params = StdioServerParameters(
+    #     command="python",
+    #     args=["/cm-mcp/db-mcp/src/server.py"],
+    #     env={**os.environ},
+    # )
+    from fastmcp import Client
     
+    # HTTP server
+    client = Client("http://localhost:8000/mcp")
     async with aiohttp.ClientSession() as http:
-        async with stdio_client(server_params) as (read, write):
-            async with ClientSession(read, write) as mcp:
-                await mcp.initialize()
+        async with client:
                 
                 # Get tools in OpenAI format
-                mcp_tools = await mcp.list_tools()
+                mcp_tools = await client.list_tools()
                 tools = [
                     {
                         "type": "function",
@@ -63,7 +64,7 @@ async def main():
                             "parameters": t.inputSchema or {"type": "object", "properties": {}},
                         },
                     }
-                    for t in mcp_tools.tools
+                    for t in mcp_tools
                 ]
                 
                 print(f"Connected with {len(tools)} tools")
@@ -125,18 +126,22 @@ Format your answers as:
                         })
                         
                         for tc in tool_calls:
-                            func = tc["function"]
-                            args = json.loads(func["arguments"]) if func["arguments"] else {}
-                            print(f"\n🔧 {func['name']}({args})")
-                            
-                            result = await mcp.call_tool(func["name"], args)
-                            result_text = result.content[0].text if result.content else ""
-                            
-                            messages.append({
-                                "role": "tool",
-                                "tool_call_id": tc["id"],
-                                "content": result_text,
-                            })
+                            try:
+                                func = tc["function"]
+                                args = json.loads(func["arguments"]) if func["arguments"] else {}
+                                print(f"\n🔧 Tool Call: {func['name']}({args})")
+                                
+                                result = await client.call_tool(func["name"], args)
+                                result_text = result.content[0].text if result.content else ""
+                                
+                                messages.append({
+                                    "role": "tool",
+                                    "tool_call_id": tc["id"],
+                                    "content": result_text,
+                                })
+                            except Exception as e:
+                                print(e)
+                                continue
 
 
 if __name__ == "__main__":
