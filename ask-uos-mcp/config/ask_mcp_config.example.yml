@@ -1,0 +1,37 @@
+crawl_settings:
+  # Web crawler configuration (creaw4ai)
+  base_url: "http://crawl4ai:11235/crawl" # when service on docker compose
+  ttl_redis: 172800 #48 * 60 * 60  # 48h default TTL (time that a webiste is cached before it is crawled again)
+  crawl_payload: # doc https://www.postman.com/pixelao/pixel-public-workspace/documentation/c26yn3l/crawl4ai-api?entity=request-24060341-db21f4c1-3760-4a21-abad-3c07a90e08da
+    browser_config:
+      type: "BrowserConfig"
+      params:
+        headless: true
+    crawler_config:
+      type: "CrawlerRunConfig"
+      params:
+        stream: false
+        cache_mode:
+          type: "CacheMode"
+          params: "enabled"
+        check_cache_freshness: true #check_cache_freshness=True, it uses HTTP ETag and Last-Modified headers to validate if the cached content is still fresh without doing a full page re-crawl
+        cache_validation_timeout: 10.0
+        word_count_threshold: 100
+        target_elements:
+          - "main"
+          - "div#content"
+        scan_full_page: true
+
+app: 
+  summary_threshold: 70000 # in tokens
+
+models:
+  
+  # - provider: "google" # ["openai", "google", "self-hosted"]
+  #   role: "main" # ["main", "helper"] # main: model used for agentic tasks and generatiom. Helper: user for summary generation and tasks that do not require reasoning (easy tasks)
+  #   model_name: "gemini-3-flash-preview"
+  
+  - provider: "self-hosted" # ["openai", "google", "self-hosted"]
+    role: "helper" # ["main", "helper"] # main: model used for agentic tasks and generatiom. Helper: user for summary generation and tasks that do not require reasoning (easy tasks)
+    model_name: "gpt-oss"
+    base_url: "https://my-self-hosted.de/v1"

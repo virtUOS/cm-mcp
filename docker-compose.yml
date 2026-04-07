@@ -11,7 +11,8 @@ services:
     networks:
       - net_mcp
     ports:
-      - 8000:800
+      - 8000:8000
+      - 8001:8001
     depends_on:
       postgres:
         condition: service_healthy
@@ -36,9 +37,9 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-his-test}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-his_password}
-      POSTGRES_DB: ${POSTGRES_DB:-his_db}
+      POSTGRES_USER: ${POSTGRES_USER:-user_test}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-user_password}
+      POSTGRES_DB: ${POSTGRES_DB:-user_db}
       PGDATA: /var/lib/postgresql/data/pgdata
   
     networks:
@@ -53,20 +54,16 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
   
-    
-#   pgadmin-his:
-#     # https://docs.docker.com/guides/pgadmin/  
-#     image: dpage/pgadmin4:latest
-#     ports:
-#       - 5051:80
-#     environment:
-#       # Required by pgAdmin
-#       PGADMIN_DEFAULT_EMAIL: "adminhistest@his.com"
-#       PGADMIN_DEFAULT_PASSWORD: "passwordhistest"
-#     networks:
-#       - net_his
-#     restart: always
-   
+  crawl4ai:
+    image: unclecode/crawl4ai:0.8.0
+    container_name: crawl4ai-mcp
+    networks:
+      - net_mcp
+    ports:
+      - "11235"
+    restart: always
+  
+       
 volumes:
   postgres-data:
   redis-data:
@@ -75,5 +72,3 @@ networks:
   net_mcp:
     driver: bridge
 
-
-# run this inside the postgres container to restore the db  pg_restore --clean --if-exists --no-owner --no-privileges --user ${POSTGRES_USER} --dbname ${POSTGRES_DB} /tmp/backup.backup    

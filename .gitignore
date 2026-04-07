@@ -10,3 +10,7 @@ wheels/
 .venv
 
 .env
+
+# config files
+ask_mcp_config.yml
+allowed_tables.yaml

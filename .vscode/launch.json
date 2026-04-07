@@ -5,12 +5,40 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "client",
+            "name": "db-client",
             "type": "debugpy",
             "request": "launch",
             "justMyCode":false,
             "program": "/cm-mcp/db-mcp/src/client.py",
-            "env":{ "PYTHONPATH": "/his-mcp"},
+            "env":{ "PYTHONPATH": "/cm-mcp"},
+        
+        },
+        {
+            "name": "ask-mcp-client",
+            "type": "debugpy",
+            "request": "launch",
+            "justMyCode":false,
+            "program": "/cm-mcp/ask-uos-mcp/client.py",
+            "env":{ "PYTHONPATH": "/cm-mcp"},
+        
+        },
+
+        {
+            "name": "db-server",
+            "type": "debugpy",
+            "request": "launch",
+            "justMyCode":false,
+            "program": "/cm-mcp/db-mcp/src/server.py",
+            "env":{ "PYTHONPATH": "/cm-mcp"},
+        
+        },
+        {
+            "name": "ask-mcp-server",
+            "type": "debugpy",
+            "request": "launch",
+            "justMyCode":false,
+            "program": "/cm-mcp/ask-uos-mcp/server.py",
+            "env":{ "PYTHONPATH": "/cm-mcp"},
         
         },
     ]

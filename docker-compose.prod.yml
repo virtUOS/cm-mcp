@@ -8,11 +8,13 @@ services:
     environment:
       # PostgreSQL connection string
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
-    command: ["/bin/sh", "-c", "cd db-mcp/src && python server.py"]
+    #command: ["/bin/sh", "-c", "cd db-mcp/src && python server.py"]
+    command: ["supervisord", "-c", "/cm-mcp/supervisord.conf"]
     networks:
       - net_mcp
     ports:
       - 8000:8000
+      - 8000:8001
     depends_on:
       postgres:
         condition: service_healthy
@@ -52,9 +54,18 @@ services:
       - "${POSTGRES_PORT_EXTERNAL:-5455}:5432"  
     
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-  
+      #test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-his-test} -d ${POSTGRES_DB:-his_db}"]
     
+  crawl4ai:
+    image: unclecode/crawl4ai:0.8.0
+    container_name: crawl4ai-mcp
+    networks:
+      - net_mcp
+    ports:
+      - "11235"
+    restart: always
+  
   caddy:
       image: docker.io/library/caddy:2.11-alpine
       container_name: caddy
@@ -78,6 +89,3 @@ volumes:
 networks:
   net_mcp:
     driver: bridge
-
-
-# run this inside the postgres container to restore the db  pg_restore --clean --if-exists --no-owner --no-privileges --user ${POSTGRES_USER} --dbname ${POSTGRES_DB} /tmp/backup.backup    

@@ -58,9 +58,10 @@ class Config(BaseModel):
 
         if config_path is None:
             config_path = Path(__file__).parent / "config" / "allowed_tables.yaml"
-
+            log.info(f"Allowed tables found at: {config_path}")
         curated_tables = {}
         if config_path.exists():
+            log.info(f"Allowed tables found at: {config_path}")
             with open(config_path) as f:
                 yaml_config = yaml.safe_load(f)
 
@@ -75,6 +76,7 @@ class Config(BaseModel):
                         key_columns=table_data.get("key_columns", {}),
                     )
 
+        log.info (f"Curated Tables: {curated_tables}")
         return cls(database_url=database_url, curated_tables=curated_tables)
 
     def is_curated(self, table: str) -> bool:
@@ -949,7 +951,7 @@ app = mcp.http_app(
     event_store=event_store,
     retry_interval=2000, ) # Client reconnects after 2 seconds
 
-if __name__ == "__main__":
-    import uvicorn
-    # server is accessible at the same URL: http://localhost:8000/mcp
-    uvicorn.run("server:app",  host="0.0.0.0", port=8000, log_level="info")
+# if __name__ == "__main__":
+#     import uvicorn
+#     # server is accessible at the same URL: http://localhost:8000/mcp
+#     uvicorn.run("server:app",  host="0.0.0.0", port=8000, log_level="info")

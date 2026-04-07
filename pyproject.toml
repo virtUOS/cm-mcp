@@ -14,4 +14,8 @@ dependencies = [
     "aiohttp>=3.13.3",
     "uvicorn>=0.40.0",
     "py-key-value-aio[redis]>=0.3.0",
+    "langchain>=1.2.14",
+    "langchain-openai>=1.1.12",
+    "langchain-google-genai>=4.2.1",
+    "supervisor>=4.3.0",
 ]
