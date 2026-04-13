@@ -135,6 +135,12 @@ async def summarize_content(text: str, query: str) -> str:
     result = await generate_summary(text, query)
     return result
 
+
+@mcp.custom_route("/health", methods=["GET"])
+async def health_check(request):
+    return JSONResponse({"status": "healthy", "service": "ask-mcp-server"})
+
+
 # Configure with EventStore for resumability
 event_store = EventStore()
 
