@@ -4,7 +4,7 @@ Uses FastMCP for clean tool definitions and separates data fetching
 from formatting for better maintainability.
 """
 import sys
-sys.path.append("/cm-mcp")
+sys.path.append("/cm-mcp/db-mcp")
 import json
 import os
 import re
@@ -951,7 +951,7 @@ app = mcp.http_app(
     event_store=event_store,
     retry_interval=2000, ) # Client reconnects after 2 seconds
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     # server is accessible at the same URL: http://localhost:8000/mcp
-#     uvicorn.run("server:app",  host="0.0.0.0", port=8000, log_level="info")
+if __name__ == "__main__":
+    import uvicorn
+    # server is accessible at the same URL: http://localhost:8000/mcp
+    uvicorn.run("server:app",  host="0.0.0.0", port=8000, log_level="info")

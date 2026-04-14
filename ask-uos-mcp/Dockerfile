@@ -1,14 +1,8 @@
 # Use the official Python image from Docker Hub
-# Dockerfile used for development
 FROM python:3.13
 
 # Set the working directory
-WORKDIR /cm-mcp
-
-
-# Copy the project
-COPY . .
-
+WORKDIR /cm-mcp/ask-uos-mcp
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -17,35 +11,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     wget \
     gnupg \
-    git \
     cmake \
-    vim \
     pkg-config \
     python3-dev \
-    libjpeg-dev \
-    libpng-dev \
     && rm -rf /var/lib/apt/lists/*
 
-
-
-
-# Install dependencies
 # Install uv
-# Download the latest installer
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
-# Run the installer then remove it
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/root/.local/bin:$PATH"
-RUN uv sync 
 
-ENV PATH="/cm-mcp/.venv/bin:$PATH"
+# Copy pyproject.toml first for dependency caching
+COPY pyproject.toml ./
 
 # Install dependencies
-# COPY ./requirements.txt .
-# RUN uv pip install --system -r requirements.txt
+RUN uv sync
 
-# Expose both MCP server ports
-EXPOSE 8000 8001
+# Copy log_conf from root
+COPY log_conf ./log_conf
 
+# Copy source code from ask-uos-mcp directory
+COPY ask-uos-mcp/. .
 
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PATH="/cm-mcp/ask-uos-mcp/.venv/bin:$PATH"
 
+# Expose the port
+EXPOSE 8001
+
+# Run the server
+#CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8001", "--log-level", "info"]

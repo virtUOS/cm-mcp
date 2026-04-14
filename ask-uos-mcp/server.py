@@ -149,8 +149,7 @@ app = mcp.http_app(
     event_store=event_store,
     retry_interval=2000, ) # Client reconnects after 2 seconds
 
-# if __name__ == "__main__":
-#     # TODO use supervisor to server the other mcps
-#     import uvicorn
-#     # server is accessible at the same URL: http://localhost:8001/mcp
-#     uvicorn.run("server:app",  host="0.0.0.0", port=8001, log_level="info")
+if __name__ == "__main__":
+    import uvicorn
+    # server is accessible at the same URL: http://localhost:8001/mcp
+    uvicorn.run("server:app",  host="0.0.0.0", port=8001, log_level="info")

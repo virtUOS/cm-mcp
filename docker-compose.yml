@@ -1,22 +1,54 @@
 services:
 
-  cm-mcp:
-    build: .
-    container_name: cm-mcp
+  db-mcp:
+    build:
+      context: .
+      dockerfile: db-mcp/Dockerfile
+    container_name: db-mcp
     env_file:
       - .env
+    # Keep the container running (for development)
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    volumes:
+      - .:/cm-mcp
     environment:
       # PostgreSQL connection string
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
     networks:
       - net_mcp
     ports:
-      - 8000:8000
-      - 8001:8001
+      - "8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
-  
+    restart: unless-stopped
+
+  ask-uos-mcp:
+    build:
+      context: .
+      dockerfile: ask-uos-mcp/Dockerfile
+    container_name: ask-uos-mcp
+    env_file:
+      - .env
+    # Keep the container running
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    environment:
+      AI_GATEWAY_KEY: ${AI_GATEWAY_KEY}
+      AI_GATEWAY_BASE_URL: ${AI_GATEWAY_BASE_URL:-https://api.openai.com/v1}
+      MODEL: ${MODEL:-gpt-oss}
+    volumes:
+      - .:/cm-mcp
+    networks:
+      - net_mcp
+    ports:
+      - "8001:8001"
+    depends_on:
+      redis:
+        condition: service_started
+      crawl4ai:
+        condition: service_started
+    restart: unless-stopped
+
   redis:
     container_name: mcp_redis
     image: redis:latest
@@ -53,7 +85,8 @@ services:
     
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
-  
+    restart: unless-stopped
+
   crawl4ai:
     image: unclecode/crawl4ai:0.8.0
     container_name: crawl4ai-mcp
@@ -61,9 +94,8 @@ services:
       - net_mcp
     ports:
       - "11235"
-    restart: always
+    restart: unless-stopped
   
-       
 volumes:
   postgres-data:
   redis-data:
